@@ -1,0 +1,557 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Rafael Neyra — Senior Data Engineer</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#0a0e1f;
+    --ink2:#10152e;
+    --panel:#141a35;
+    --panel2:#1a2142;
+    --border:#242c52;
+    --text:#e8ecfb;
+    --dim:#9aa6dd;
+    --faint:#5c6699;
+    --cyan:#22d3ee;
+    --blue:#4f7cff;
+    --violet:#7c5cff;
+    --warm:#ffb454;
+    --display:'Sora',sans-serif;
+    --mono:'JetBrains Mono',monospace;
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{
+    background:var(--ink);
+    color:var(--text);
+    font-family:var(--display);
+    overflow-x:hidden;
+    line-height:1.6;
+    -webkit-font-smoothing:antialiased;
+  }
+  ::selection{background:var(--cyan);color:var(--ink)}
+
+  /* animated gradient mesh background */
+  .bg-mesh{position:fixed;inset:0;z-index:0;overflow:hidden;pointer-events:none}
+  .bg-mesh .orb{position:absolute;border-radius:50%;filter:blur(80px);opacity:.5;animation:float 18s ease-in-out infinite}
+  .orb.o1{width:500px;height:500px;background:radial-gradient(circle,#4f7cff,transparent 70%);top:-150px;left:-100px}
+  .orb.o2{width:450px;height:450px;background:radial-gradient(circle,#22d3ee,transparent 70%);bottom:-100px;right:-80px;animation-delay:-6s}
+  .orb.o3{width:400px;height:400px;background:radial-gradient(circle,#7c5cff,transparent 70%);top:40%;left:50%;animation-delay:-12s}
+  @keyframes float{0%,100%{transform:translate(0,0) scale(1)}33%{transform:translate(60px,-40px) scale(1.1)}66%{transform:translate(-40px,50px) scale(.95)}}
+  .bg-grid{position:fixed;inset:0;z-index:0;pointer-events:none;opacity:.4;
+    background-image:linear-gradient(rgba(79,124,255,.04) 1px,transparent 1px),linear-gradient(90deg,rgba(79,124,255,.04) 1px,transparent 1px);
+    background-size:40px 40px;}
+  .grain{position:fixed;inset:0;z-index:1;pointer-events:none;opacity:.035;mix-blend-mode:overlay;
+    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");}
+
+  .wrap{position:relative;z-index:2;max-width:1080px;margin:0 auto;padding:0 28px}
+
+  /* NAV */
+  nav{position:fixed;top:0;left:0;right:0;z-index:100;backdrop-filter:blur(16px);background:rgba(10,14,31,.6);border-bottom:1px solid transparent;transition:.3s}
+  nav.scrolled{border-bottom-color:var(--border);background:rgba(10,14,31,.85)}
+  .nav-inner{max-width:1080px;margin:0 auto;padding:16px 28px;display:flex;align-items:center;justify-content:space-between}
+  .logo{font-family:var(--mono);font-size:.9rem;font-weight:700;color:var(--text);display:flex;align-items:center;gap:8px}
+  .logo .dot{width:9px;height:9px;border-radius:50%;background:var(--cyan);box-shadow:0 0 12px var(--cyan);animation:pulse 2s infinite}
+  @keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
+  .nav-links{display:flex;gap:26px;align-items:center}
+  .nav-links a{color:var(--dim);text-decoration:none;font-size:.82rem;font-weight:500;transition:.2s;position:relative}
+  .nav-links a::after{content:"";position:absolute;left:0;bottom:-4px;width:0;height:2px;background:var(--cyan);transition:.25s}
+  .nav-links a:hover{color:var(--text)}.nav-links a:hover::after{width:100%}
+  .nav-cta{display:flex;gap:10px;align-items:center}
+  .lang-sw{display:flex;border:1px solid var(--border);border-radius:8px;overflow:hidden;font-family:var(--mono);font-size:.7rem}
+  .lang-sw button{background:transparent;color:var(--dim);border:none;padding:6px 11px;cursor:pointer;transition:.2s}
+  .lang-sw button.on{background:linear-gradient(135deg,var(--cyan),var(--blue));color:var(--ink);font-weight:700}
+  .btn-cv{font-family:var(--mono);font-size:.72rem;font-weight:500;color:var(--ink);background:linear-gradient(135deg,var(--cyan),var(--blue));padding:8px 16px;border-radius:8px;text-decoration:none;transition:.25s;border:none;cursor:pointer}
+  .btn-cv:hover{box-shadow:0 0 24px rgba(34,211,238,.4);transform:translateY(-1px)}
+  @media(max-width:720px){.nav-links{display:none}}
+
+  /* HERO */
+  .hero{min-height:100vh;display:flex;flex-direction:column;justify-content:center;position:relative;padding-top:80px}
+  #hero-canvas{position:absolute;inset:0;z-index:0;opacity:.55}
+  .hero-content{position:relative;z-index:3}
+  .hero-greet{font-family:var(--mono);font-size:.85rem;color:var(--cyan);margin-bottom:20px;opacity:0;animation:rise .7s .2s forwards}
+  .hero h1{font-size:clamp(2.8rem,8vw,5.6rem);font-weight:800;line-height:.98;letter-spacing:-.03em;opacity:0;animation:rise .7s .35s forwards}
+  .hero h1 .grad{background:linear-gradient(120deg,var(--cyan),var(--blue) 50%,var(--violet));-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;background-size:200% auto;animation:shimmer 6s linear infinite}
+  @keyframes shimmer{to{background-position:200% center}}
+  .hero-sub{font-family:var(--mono);font-size:clamp(.95rem,2.2vw,1.3rem);color:var(--dim);margin-top:24px;opacity:0;animation:rise .7s .5s forwards}
+  .hero-sub .tw{color:var(--text);font-weight:500}
+  .hero-desc{max-width:560px;color:var(--dim);font-size:1.02rem;margin-top:22px;opacity:0;animation:rise .7s .65s forwards}
+  .hero-cta{display:flex;gap:14px;margin-top:36px;flex-wrap:wrap;opacity:0;animation:rise .7s .8s forwards}
+  .cta-primary{display:inline-flex;align-items:center;gap:10px;background:linear-gradient(135deg,var(--cyan),var(--blue));color:var(--ink);font-weight:600;font-size:.92rem;padding:14px 26px;border-radius:12px;text-decoration:none;transition:.25s}
+  .cta-primary:hover{transform:translateY(-2px);box-shadow:0 12px 32px rgba(34,211,238,.3)}
+  .cta-ghost{display:inline-flex;align-items:center;gap:10px;background:rgba(255,255,255,.04);border:1px solid var(--border);color:var(--text);font-weight:500;font-size:.92rem;padding:14px 26px;border-radius:12px;text-decoration:none;transition:.25s}
+  .cta-ghost:hover{border-color:var(--cyan);color:var(--cyan)}
+  .hero-stats{display:flex;gap:40px;margin-top:60px;flex-wrap:wrap;opacity:0;animation:rise .7s .95s forwards}
+  .hstat .n{font-size:2.2rem;font-weight:800;font-family:var(--display);background:linear-gradient(120deg,var(--cyan),var(--blue));-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
+  .hstat .l{font-family:var(--mono);font-size:.72rem;color:var(--faint);text-transform:uppercase;letter-spacing:.1em;margin-top:2px}
+  .scroll-ind{position:absolute;bottom:32px;left:50%;transform:translateX(-50%);z-index:3;opacity:0;animation:rise 1s 1.4s forwards}
+  .scroll-ind .mouse{width:24px;height:38px;border:2px solid var(--faint);border-radius:14px;display:flex;justify-content:center;padding-top:7px}
+  .scroll-ind .wheel{width:3px;height:7px;background:var(--cyan);border-radius:3px;animation:wheel 1.6s infinite}
+  @keyframes wheel{0%{opacity:1;transform:translateY(0)}100%{opacity:0;transform:translateY(10px)}}
+  @keyframes rise{from{opacity:0;transform:translateY(30px)}to{opacity:1;transform:translateY(0)}}
+
+  /* SECTION reveal (focus/blur on scroll) */
+  section.block{padding:90px 0;position:relative;z-index:2}
+  .reveal{opacity:0;filter:blur(14px);transform:translateY(50px) scale(.98);transition:opacity .9s cubic-bezier(.2,.7,.2,1),filter .9s cubic-bezier(.2,.7,.2,1),transform .9s cubic-bezier(.2,.7,.2,1)}
+  .reveal.in{opacity:1;filter:blur(0);transform:translateY(0) scale(1)}
+  .reveal.out{opacity:.25;filter:blur(6px);transform:scale(.99)}
+
+  .sec-label{font-family:var(--mono);font-size:.78rem;color:var(--cyan);letter-spacing:.15em;text-transform:uppercase;margin-bottom:14px;display:flex;align-items:center;gap:12px}
+  .sec-label::before{content:"";width:30px;height:1px;background:var(--cyan)}
+  .sec-title{font-size:clamp(1.8rem,4vw,2.8rem);font-weight:700;letter-spacing:-.02em;margin-bottom:8px}
+  .sec-intro{color:var(--dim);max-width:620px;margin-bottom:46px;font-size:1.02rem}
+
+  /* ABOUT */
+  .about-grid{display:grid;grid-template-columns:1.4fr 1fr;gap:50px;align-items:start}
+  @media(max-width:780px){.about-grid{grid-template-columns:1fr;gap:36px}}
+  .about-text p{color:var(--dim);font-size:1.05rem;margin-bottom:18px}
+  .about-text b{color:var(--text);font-weight:600}
+  .about-card{background:linear-gradient(160deg,var(--panel),var(--ink2));border:1px solid var(--border);border-radius:18px;padding:28px;position:relative;overflow:hidden}
+  .about-card::before{content:"";position:absolute;top:-50px;right:-50px;width:140px;height:140px;border-radius:50%;background:radial-gradient(circle,rgba(34,211,238,.2),transparent 70%)}
+  .about-card h4{font-family:var(--mono);font-size:.72rem;color:var(--cyan);text-transform:uppercase;letter-spacing:.1em;margin-bottom:18px;position:relative}
+  .focus-row{display:flex;align-items:center;gap:12px;margin-bottom:14px;position:relative}
+  .focus-row .fi{width:38px;height:38px;border-radius:10px;background:rgba(79,124,255,.14);border:1px solid rgba(79,124,255,.3);display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0}
+  .focus-row .ft{font-size:.92rem;color:var(--text);font-weight:500}
+  .focus-row .fs{font-size:.78rem;color:var(--faint)}
+
+  /* GRAPH */
+  .graph-wrap{position:relative;width:100%;height:560px;background:linear-gradient(160deg,rgba(20,26,53,.5),rgba(10,14,31,.3));border:1px solid var(--border);border-radius:20px;overflow:hidden}
+  #graph-canvas{display:block;width:100%;height:100%;cursor:grab}
+  #graph-canvas:active{cursor:grabbing}
+  .graph-tip{position:absolute;bottom:16px;left:16px;font-family:var(--mono);font-size:.72rem;color:var(--faint);pointer-events:none}
+  .graph-legend{position:absolute;top:16px;right:16px;display:flex;flex-direction:column;gap:7px}
+  .leg{display:flex;align-items:center;gap:8px;font-family:var(--mono);font-size:.72rem;color:var(--dim)}
+  .leg .ld{width:10px;height:10px;border-radius:50%}
+
+  /* TIMELINE */
+  .tl{position:relative;margin-top:20px}
+  .tl::before{content:"";position:absolute;left:18px;top:8px;bottom:8px;width:2px;background:linear-gradient(var(--cyan),var(--blue),var(--violet),transparent)}
+  .tl-item{position:relative;padding-left:56px;padding-bottom:38px}
+  .tl-item:last-child{padding-bottom:0}
+  .tl-node{position:absolute;left:9px;top:4px;width:20px;height:20px;border-radius:50%;background:var(--ink);border:2px solid var(--cyan);display:flex;align-items:center;justify-content:center}
+  .tl-node::after{content:"";width:7px;height:7px;border-radius:50%;background:var(--cyan);box-shadow:0 0 10px var(--cyan)}
+  .tl-card{background:linear-gradient(160deg,var(--panel),rgba(16,21,46,.6));border:1px solid var(--border);border-radius:16px;padding:22px 24px;transition:.3s}
+  .tl-card:hover{border-color:var(--cyan);transform:translateX(6px);box-shadow:-6px 0 24px rgba(34,211,238,.08)}
+  .tl-top{display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap;gap:8px;margin-bottom:4px}
+  .tl-role{font-size:1.15rem;font-weight:600;color:var(--text)}
+  .tl-co{font-family:var(--mono);font-size:.85rem;color:var(--blue);font-weight:500}
+  .tl-date{font-family:var(--mono);font-size:.72rem;color:var(--ink);background:linear-gradient(135deg,var(--cyan),var(--blue));padding:3px 12px;border-radius:20px;font-weight:500}
+  .tl-card ul{margin:12px 0 0 0;list-style:none}
+  .tl-card li{color:var(--dim);font-size:.92rem;padding-left:20px;position:relative;margin-bottom:6px}
+  .tl-card li::before{content:"▹";position:absolute;left:0;color:var(--cyan)}
+  .tl-tech{display:flex;flex-wrap:wrap;gap:7px;margin-top:14px}
+  .tl-tech span{font-family:var(--mono);font-size:.7rem;color:var(--cyan);background:rgba(34,211,238,.08);border:1px solid rgba(34,211,238,.22);padding:3px 10px;border-radius:6px}
+
+  /* CERTS */
+  .cert-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:16px}
+  .cert{background:linear-gradient(160deg,var(--panel),rgba(16,21,46,.5));border:1px solid var(--border);border-radius:14px;padding:20px;position:relative;overflow:hidden;transition:.3s}
+  .cert::before{content:"";position:absolute;left:0;top:0;bottom:0;width:3px;background:linear-gradient(var(--cyan),var(--blue))}
+  .cert:hover{transform:translateY(-5px);border-color:var(--cyan);box-shadow:0 14px 34px rgba(0,0,0,.3)}
+  .cert .star{color:var(--warm);font-size:1rem;margin-bottom:8px}
+  .cert .cn{font-size:.98rem;font-weight:600;color:var(--text);line-height:1.35;margin-bottom:6px}
+  .cert .ci{font-family:var(--mono);font-size:.74rem;color:var(--faint)}
+
+  /* EDU + VOL */
+  .dual{display:grid;grid-template-columns:1fr 1fr;gap:40px}
+  @media(max-width:780px){.dual{grid-template-columns:1fr;gap:36px}}
+  .edu-item{padding-left:22px;position:relative;margin-bottom:20px}
+  .edu-item::before{content:"";position:absolute;left:0;top:6px;width:10px;height:10px;border-radius:3px;background:linear-gradient(135deg,var(--cyan),var(--blue))}
+  .edu-item .d{font-size:.98rem;font-weight:600;color:var(--text);line-height:1.35}
+  .edu-item .i{font-family:var(--mono);font-size:.76rem;color:var(--faint);margin-top:3px}
+  .vol-item{padding-left:22px;position:relative;margin-bottom:20px}
+  .vol-item::before{content:"♥";position:absolute;left:0;top:2px;color:var(--violet);font-size:.85rem}
+  .vol-item .d{font-size:.98rem;font-weight:600;color:var(--text);line-height:1.35}
+  .vol-item .i{font-family:var(--mono);font-size:.76rem;color:var(--faint);margin-top:3px}
+
+  /* CONTACT */
+  .contact{text-align:center;padding:110px 0}
+  .contact h2{font-size:clamp(2rem,5vw,3.4rem);font-weight:800;letter-spacing:-.02em;margin-bottom:18px}
+  .contact h2 .grad{background:linear-gradient(120deg,var(--cyan),var(--violet));-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
+  .contact p{color:var(--dim);max-width:480px;margin:0 auto 38px;font-size:1.08rem}
+  .contact-btns{display:flex;gap:16px;justify-content:center;flex-wrap:wrap}
+  footer{border-top:1px solid var(--border);padding:30px 0;text-align:center;font-family:var(--mono);font-size:.76rem;color:var(--faint);position:relative;z-index:2}
+
+  .es-only{display:inline}.en-only{display:none}
+  body.lang-en .es-only{display:none}body.lang-en .en-only{display:inline}
+  body.lang-en .es-blk{display:none}.en-blk{display:none}body.lang-en .en-blk{display:block}
+</style>
+</head>
+<body class="lang-es">
+
+<div class="bg-mesh"><div class="orb o1"></div><div class="orb o2"></div><div class="orb o3"></div></div>
+<div class="bg-grid"></div>
+<div class="grain"></div>
+
+<nav id="nav">
+  <div class="nav-inner">
+    <div class="logo"><span class="dot"></span>RN<span style="color:var(--faint)">/</span><span style="color:var(--dim);font-weight:400">data_engineer</span></div>
+    <div class="nav-links">
+      <a href="#about"><span class="es-only">Perfil</span><span class="en-only">About</span></a>
+      <a href="#stack">Stack</a>
+      <a href="#exp"><span class="es-only">Experiencia</span><span class="en-only">Experience</span></a>
+      <a href="#certs"><span class="es-only">Certificaciones</span><span class="en-only">Certs</span></a>
+      <a href="#contact"><span class="es-only">Contacto</span><span class="en-only">Contact</span></a>
+    </div>
+    <div class="nav-cta">
+      <div class="lang-sw"><button id="bes" class="on" onclick="setLang('es')">ES</button><button id="ben" onclick="setLang('en')">EN</button></div>
+      <a class="btn-cv" href="Rafael_Neyra_CV.pdf" download>CV ↓</a>
+    </div>
+  </div>
+</nav>
+
+<!-- HERO -->
+<header class="hero">
+  <canvas id="hero-canvas"></canvas>
+  <div class="wrap hero-content">
+    <div class="hero-greet">// hola, soy Rafael — construyo plataformas de datos</div>
+    <h1>Senior<br><span class="grad">Data Engineer</span></h1>
+    <div class="hero-sub"><span class="tw">Azure</span> · <span class="tw">Databricks</span> · <span class="tw">AWS</span> · <span class="tw">Big Data</span></div>
+    <p class="hero-desc">
+      <span class="es-only">Ingeniero de Sistemas titulado con +10 años transformando datos en decisiones para banca, telco y retail.</span>
+      <span class="en-only">Certified Systems Engineer with 10+ years turning data into decisions for banking, telco and retail.</span>
+    </p>
+    <div class="hero-cta">
+      <a class="cta-primary" href="#contact"><span class="es-only">Trabajemos juntos</span><span class="en-only">Let's work together</span> →</a>
+      <a class="cta-ghost" href="#stack"><span class="es-only">Explorar mi stack</span><span class="en-only">Explore my stack</span></a>
+    </div>
+    <div class="hero-stats">
+      <div class="hstat"><div class="n">10+</div><div class="l"><span class="es-only">Años exp.</span><span class="en-only">Years exp.</span></div></div>
+      <div class="hstat"><div class="n">10</div><div class="l"><span class="es-only">Certificaciones</span><span class="en-only">Certifications</span></div></div>
+      <div class="hstat"><div class="n">3.3K</div><div class="l"><span class="es-only">Seguidores</span><span class="en-only">Followers</span></div></div>
+      <div class="hstat"><div class="n">∞</div><div class="l"><span class="es-only">Ganas de crear</span><span class="en-only">Drive to build</span></div></div>
+    </div>
+  </div>
+  <div class="scroll-ind"><div class="mouse"><div class="wheel"></div></div></div>
+</header>
+
+<!-- ABOUT -->
+<section class="block" id="about">
+  <div class="wrap reveal">
+    <div class="sec-label"><span class="es-only">Perfil</span><span class="en-only">About</span></div>
+    <h2 class="sec-title"><span class="es-only">Quién soy</span><span class="en-only">Who I am</span></h2>
+    <div class="about-grid" style="margin-top:30px">
+      <div class="about-text">
+        <div class="es-blk">
+          <p><b>Ingeniero de Sistemas titulado</b> con más de 10 años de trayectoria en tecnología y más de 6 años especializado en soluciones de datos.</p>
+          <p>Actualmente en <b>Mibanco</b> desarrollo soluciones en la nube sobre <b>Azure y Databricks</b>, atendiendo requerimientos de negocio e incidencias en entornos productivos. Mi experiencia combina ingeniería de datos moderna con una base sólida en desarrollo de software y liderazgo técnico, adquirida en <b>NTT DATA y everis</b> en proyectos para Telefónica y VISANET.</p>
+          <p>Me mueve transformar datos en decisiones, la mejora continua y el aprendizaje constante en tecnologías cloud.</p>
+        </div>
+        <div class="en-blk">
+          <p><b>Certified Systems Engineer</b> with 10+ years in technology and 6+ years specialized in data solutions.</p>
+          <p>Currently at <b>Mibanco</b> I build cloud solutions on <b>Azure and Databricks</b>, delivering business requirements and handling production incidents. My experience blends modern data engineering with a strong software development and technical leadership foundation, earned at <b>NTT DATA and everis</b> on projects for Telefónica and VISANET.</p>
+          <p>I'm driven by turning data into decisions, continuous improvement and constant learning in cloud tech.</p>
+        </div>
+      </div>
+      <div class="about-card">
+        <h4><span class="es-only">Mi enfoque</span><span class="en-only">My focus</span></h4>
+        <div class="focus-row"><div class="fi">☁️</div><div><div class="ft"><span class="es-only">Ingeniería de datos cloud</span><span class="en-only">Cloud data engineering</span></div><div class="fs">Azure · Databricks · AWS</div></div></div>
+        <div class="focus-row"><div class="fi">🔗</div><div><div class="ft"><span class="es-only">Pipelines ETL/ELT escalables</span><span class="en-only">Scalable ETL/ELT pipelines</span></div><div class="fs">Spark · PySpark · SQL</div></div></div>
+        <div class="focus-row"><div class="fi">🚀</div><div><div class="ft"><span class="es-only">Mejora continua</span><span class="en-only">Continuous improvement</span></div><div class="fs">Agile · Scrum · DevOps</div></div></div>
+        <div class="focus-row"><div class="fi">❤️</div><div><div class="ft"><span class="es-only">Impacto social</span><span class="en-only">Social impact</span></div><div class="fs"><span class="es-only">Voluntariado · Robótica para niños</span><span class="en-only">Volunteering · Robotics for kids</span></div></div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- STACK GRAPH -->
+<section class="block" id="stack">
+  <div class="wrap reveal">
+    <div class="sec-label"><span class="es-only">Ecosistema</span><span class="en-only">Ecosystem</span></div>
+    <h2 class="sec-title"><span class="es-only">Mi stack tecnológico</span><span class="en-only">My tech stack</span></h2>
+    <p class="sec-intro"><span class="es-only">Un mapa interactivo de las tecnologías que domino. Arrastra los nodos, pasa el cursor para resaltar conexiones.</span><span class="en-only">An interactive map of the technologies I work with. Drag the nodes, hover to highlight connections.</span></p>
+    <div class="graph-wrap">
+      <canvas id="graph-canvas"></canvas>
+      <div class="graph-legend">
+        <div class="leg"><span class="ld" style="background:#22d3ee"></span>Cloud / Big Data</div>
+        <div class="leg"><span class="ld" style="background:#4f7cff"></span><span class="es-only">Lenguajes</span><span class="en-only">Languages</span></div>
+        <div class="leg"><span class="ld" style="background:#7c5cff"></span>Data / BI</div>
+        <div class="leg"><span class="ld" style="background:#ffb454"></span>DevOps</div>
+      </div>
+      <div class="graph-tip"><span class="es-only">↔ arrastra · pasa el cursor</span><span class="en-only">↔ drag · hover</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- EXPERIENCE -->
+<section class="block" id="exp">
+  <div class="wrap reveal">
+    <div class="sec-label"><span class="es-only">Trayectoria</span><span class="en-only">Journey</span></div>
+    <h2 class="sec-title"><span class="es-only">Experiencia profesional</span><span class="en-only">Professional experience</span></h2>
+    <div class="tl" style="margin-top:40px">
+      <div class="tl-item"><div class="tl-node"></div><div class="tl-card">
+        <div class="tl-top"><div><div class="tl-role">Senior Data Engineer</div><div class="tl-co">Mibanco</div></div><div class="tl-date">Jul 2023 — <span class="es-only">Actualidad</span><span class="en-only">Present</span></div></div>
+        <ul>
+          <li><span class="es-only">Soluciones de datos en la nube sobre Azure y Databricks para el sector financiero.</span><span class="en-only">Cloud data solutions on Azure and Databricks for the financial sector.</span></li>
+          <li><span class="es-only">Pipelines de datos y procesos ETL/ELT en entornos productivos.</span><span class="en-only">Data pipelines and ETL/ELT processes in production.</span></li>
+          <li><span class="es-only">Atención de incidencias asegurando continuidad y calidad de los flujos de datos.</span><span class="en-only">Incident handling ensuring continuity and quality of data flows.</span></li>
+        </ul>
+        <div class="tl-tech"><span>Azure</span><span>Databricks</span><span>PySpark</span><span>SQL</span><span>ETL</span></div>
+      </div></div>
+      <div class="tl-item"><div class="tl-node"></div><div class="tl-card">
+        <div class="tl-top"><div><div class="tl-role"><span class="es-only">Líder Técnico de Aplicaciones</span><span class="en-only">Application Technical Leader</span></div><div class="tl-co">NTT DATA · Telefónica / VISANET</div></div><div class="tl-date">2021 — 2023</div></div>
+        <ul>
+          <li><span class="es-only">Diseño de componentes de arquitectura de aplicaciones y seguimiento técnico.</span><span class="en-only">Application architecture component design and technical follow-up.</span></li>
+          <li><span class="es-only">Optimización de rendimiento en aplicaciones .NET y consultoría de arquitectura.</span><span class="en-only">.NET performance optimization and architecture consulting.</span></li>
+          <li><span class="es-only">Componentes reutilizables e interoperables (SOAP / REST).</span><span class="en-only">Reusable, interoperable components (SOAP / REST).</span></li>
+        </ul>
+        <div class="tl-tech"><span>.NET</span><span>SOAP / REST</span><span>Arquitectura</span></div>
+      </div></div>
+      <div class="tl-item"><div class="tl-node"></div><div class="tl-card">
+        <div class="tl-top"><div><div class="tl-role"><span class="es-only">Analista Desarrollador</span><span class="en-only">Developer Analyst</span></div><div class="tl-co">everis</div></div><div class="tl-date">2018 — 2021</div></div>
+        <ul>
+          <li><span class="es-only">Soluciones en .NET, Linux y Oracle; aplicaciones MVC (arquitectura NBO).</span><span class="en-only">.NET, Linux and Oracle solutions; MVC apps (NBO architecture).</span></li>
+          <li><span class="es-only">Despliegues de objetos en testing, calidad, pre-producción y producción.</span><span class="en-only">Object deployments across testing, QA, pre-prod and production.</span></li>
+        </ul>
+        <div class="tl-tech"><span>.NET</span><span>Oracle</span><span>PL/SQL</span><span>Linux</span></div>
+      </div></div>
+      <div class="tl-item"><div class="tl-node"></div><div class="tl-card">
+        <div class="tl-top"><div><div class="tl-role"><span class="es-only">Analista de Datos</span><span class="en-only">Data Analyst</span></div><div class="tl-co">GSS · Global Sales Solutions</div></div><div class="tl-date">2017</div></div>
+        <ul>
+          <li><span class="es-only">Análisis de datos para clientes de Telco, Banca y Seguros.</span><span class="en-only">Data analysis for Telco, Banking and Insurance clients.</span></li>
+          <li><span class="es-only">Reportes y procesos ETL/DW con SQL Server, SSRS, SSIS, Tableau.</span><span class="en-only">Reports and ETL/DW with SQL Server, SSRS, SSIS, Tableau.</span></li>
+        </ul>
+        <div class="tl-tech"><span>SQL Server</span><span>SSIS</span><span>Tableau</span><span>ETL / DW</span></div>
+      </div></div>
+    </div>
+    <p style="margin-top:24px;color:var(--faint);font-family:var(--mono);font-size:.82rem;padding-left:56px">
+      <span class="es-only">2012–2017 · Experis (ManpowerGroup) · SSK · TECSUP · MDY · J&N Consultores</span>
+      <span class="en-only">2012–2017 · Experis (ManpowerGroup) · SSK · TECSUP · MDY · J&N Consultores</span>
+    </p>
+  </div>
+</section>
+
+<!-- CERTIFICATIONS -->
+<section class="block" id="certs">
+  <div class="wrap reveal">
+    <div class="sec-label"><span class="es-only">Credenciales</span><span class="en-only">Credentials</span></div>
+    <h2 class="sec-title"><span class="es-only">Certificaciones</span><span class="en-only">Certifications</span></h2>
+    <p class="sec-intro"><span class="es-only">Formación continua en cloud, datos y metodologías ágiles.</span><span class="en-only">Continuous learning in cloud, data and agile methodologies.</span></p>
+    <div class="cert-grid">
+      <div class="cert"><div class="star">★</div><div class="cn">Databricks Lakehouse Fundamentals</div><div class="ci">Databricks · 2023</div></div>
+      <div class="cert"><div class="star">★</div><div class="cn">Ingeniería de Datos con Microsoft Azure</div><div class="ci">Smart Data · 2023</div></div>
+      <div class="cert"><div class="star">★</div><div class="cn">Arquitectura para Big Data & Cloud</div><div class="ci">Big Data Academy · 2023</div></div>
+      <div class="cert"><div class="star">★</div><div class="cn">Data Engineer & Big Data Multi-Cloud</div><div class="ci">Big Data Academy · 2023</div></div>
+      <div class="cert"><div class="star">★</div><div class="cn"><span class="es-only">Introducción al Desarrollo Backend</span><span class="en-only">Intro to Backend Development</span></div><div class="ci">Platzi · 2023</div></div>
+      <div class="cert"><div class="star">★</div><div class="cn">Scrum Master · Historias de Usuario</div><div class="ci">Platzi · 2022</div></div>
+      <div class="cert"><div class="star">★</div><div class="cn"><span class="es-only">Introducción a DevOps</span><span class="en-only">Intro to DevOps</span></div><div class="ci">Platzi · 2022</div></div>
+      <div class="cert"><div class="star">★</div><div class="cn">Performance & Vulnerability Testing</div><div class="ci">JMeter, OWASP ZAP · 2022</div></div>
+      <div class="cert"><div class="star">★</div><div class="cn">Oracle / PL-SQL</div><div class="ci">Udemy · 2017</div></div>
+      <div class="cert"><div class="star">★</div><div class="cn">CCNA I · II · III</div><div class="ci">Universidad César Vallejo · 2014</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- EDU + VOLUNTEER -->
+<section class="block">
+  <div class="wrap reveal">
+    <div class="dual">
+      <div>
+        <div class="sec-label">🎓 <span class="es-only">Formación</span><span class="en-only">Education</span></div>
+        <h2 class="sec-title" style="font-size:1.7rem;margin-bottom:30px"><span class="es-only">Formación académica</span><span class="en-only">Education</span></h2>
+        <div class="edu-item"><div class="d"><span class="es-only">Ingeniería de Sistemas — Titulado</span><span class="en-only">Systems Engineering — Degree</span></div><div class="i">Universidad César Vallejo · 2012–2017</div></div>
+        <div class="edu-item"><div class="d"><span class="es-only">Diplomatura en Creación de Negocios</span><span class="en-only">Diploma in Business Creation</span></div><div class="i">PUCP · 2018–2019</div></div>
+        <div class="edu-item"><div class="d"><span class="es-only">Programación .NET</span><span class="en-only">.NET Programming</span></div><div class="i">IDAT · 2017 · <span style="color:var(--cyan)">Nota: 19</span></div></div>
+        <div class="edu-item"><div class="d"><span class="es-only">Desarrollo C# · Automatización y Robótica</span><span class="en-only">C# Dev · Automation & Robotics</span></div><div class="i">UNI · 2016–2017</div></div>
+        <div class="edu-item"><div class="d"><span class="es-only">Inglés — en curso</span><span class="en-only">English — in progress</span></div><div class="i">ICPNA · 2022+</div></div>
+      </div>
+      <div>
+        <div class="sec-label">❤️ <span class="es-only">Comunidad</span><span class="en-only">Community</span></div>
+        <h2 class="sec-title" style="font-size:1.7rem;margin-bottom:30px"><span class="es-only">Voluntariado</span><span class="en-only">Volunteering</span></h2>
+        <div class="vol-item"><div class="d"><span class="es-only">Voluntario de Robótica para Niños</span><span class="en-only">Robotics Volunteer for Kids</span></div><div class="i">everis Perú · 2018+</div></div>
+        <div class="vol-item"><div class="d"><span class="es-only">Administrador — Recaudación de juguetes</span><span class="en-only">Admin — Toy fundraising</span></div><div class="i">Club Str Biker · 2017+</div></div>
+        <div class="vol-item"><div class="d"><span class="es-only">Personal de Apoyo</span><span class="en-only">Support Staff</span></div><div class="i">Ayúdanos a Ayudar .PE · 2019+</div></div>
+        <div style="margin-top:24px;padding:18px;background:linear-gradient(160deg,rgba(124,92,255,.1),transparent);border:1px solid rgba(124,92,255,.25);border-radius:14px">
+          <p style="color:var(--dim);font-size:.9rem;font-style:italic"><span class="es-only">"Transformar datos en decisiones y conocimiento en oportunidades para quienes más lo necesitan."</span><span class="en-only">"Turning data into decisions and knowledge into opportunities for those who need it most."</span></p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CONTACT -->
+<section class="block contact" id="contact">
+  <div class="wrap reveal">
+    <h2><span class="es-only">¿</span>Hablemos<span class="es-only"> de </span><span class="en-only"> about </span><span class="grad">data</span><span class="es-only">?</span></h2>
+    <p><span class="es-only">Estoy abierto a nuevas oportunidades como Data Engineer — presencial, híbrido o remoto. Conversemos.</span><span class="en-only">Open to new Data Engineer opportunities — on-site, hybrid or remote. Let's talk.</span></p>
+    <div class="contact-btns">
+      <a class="cta-primary" href="mailto:rneyral94@gmail.com">✉ rneyral94@gmail.com</a>
+      <a class="cta-ghost" href="https://www.linkedin.com/in/rafael-neyra-b54bb2b4/" target="_blank">in LinkedIn</a>
+      <a class="cta-ghost" href="tel:+51986653807">☎ +51 986 653 807</a>
+    </div>
+  </div>
+</section>
+
+<footer><div class="wrap">© 2026 Rafael Neyra · <span class="es-only">Construido con código y café</span><span class="en-only">Built with code and coffee</span> · Lima, PE 🇵🇪</div></footer>
+
+<script>
+  // ===== language =====
+  function setLang(l){
+    document.body.className = 'lang-'+l;
+    document.getElementById('bes').classList.toggle('on', l==='es');
+    document.getElementById('ben').classList.toggle('on', l==='en');
+    document.documentElement.lang = l;
+  }
+  // ===== nav scroll =====
+  const nav = document.getElementById('nav');
+  addEventListener('scroll', ()=> nav.classList.toggle('scrolled', scrollY>40));
+
+  // ===== reveal on scroll (focus/blur) =====
+  const io = new IntersectionObserver((entries)=>{
+    entries.forEach(e=>{
+      if(e.isIntersecting){ e.target.classList.add('in'); e.target.classList.remove('out'); }
+      else { if(e.target.classList.contains('in')){ e.target.classList.add('out'); } }
+    });
+  }, {threshold:0.15});
+  document.querySelectorAll('.reveal').forEach(el=>io.observe(el));
+
+  // ===== HERO particle network =====
+  (function(){
+    const c = document.getElementById('hero-canvas'), x = c.getContext('2d');
+    let w,h,pts;
+    function size(){ w=c.width=c.offsetWidth; h=c.height=c.offsetHeight; init(); }
+    function init(){
+      pts=[]; const n=Math.min(70, Math.floor(w*h/16000));
+      for(let i=0;i<n;i++) pts.push({x:Math.random()*w,y:Math.random()*h,vx:(Math.random()-.5)*.4,vy:(Math.random()-.5)*.4});
+    }
+    function draw(){
+      x.clearRect(0,0,w,h);
+      for(let i=0;i<pts.length;i++){
+        const p=pts[i]; p.x+=p.vx; p.y+=p.vy;
+        if(p.x<0||p.x>w)p.vx*=-1; if(p.y<0||p.y>h)p.vy*=-1;
+        for(let j=i+1;j<pts.length;j++){
+          const q=pts[j], dx=p.x-q.x, dy=p.y-q.y, d=Math.hypot(dx,dy);
+          if(d<130){ x.strokeStyle='rgba(79,124,255,'+(1-d/130)*.5+')'; x.lineWidth=.6; x.beginPath(); x.moveTo(p.x,p.y); x.lineTo(q.x,q.y); x.stroke(); }
+        }
+        x.fillStyle='rgba(34,211,238,.9)'; x.beginPath(); x.arc(p.x,p.y,1.8,0,7); x.fill();
+      }
+      requestAnimationFrame(draw);
+    }
+    addEventListener('resize',size); size(); draw();
+  })();
+
+  // ===== STACK force-directed graph =====
+  (function(){
+    const c = document.getElementById('graph-canvas'), x = c.getContext('2d');
+    const COL = {cloud:'#22d3ee', lang:'#4f7cff', data:'#7c5cff', devops:'#ffb454', core:'#ffffff'};
+    const nodes = [
+      {id:'core', label:'Data Engineer', g:'core', r:30, fixed:true},
+      {id:'azure', label:'Azure', g:'cloud', r:20},
+      {id:'databricks', label:'Databricks', g:'cloud', r:22},
+      {id:'spark', label:'Spark', g:'cloud', r:18},
+      {id:'pyspark', label:'PySpark', g:'cloud', r:17},
+      {id:'aws', label:'AWS', g:'cloud', r:18},
+      {id:'delta', label:'Delta Lake', g:'cloud', r:15},
+      {id:'python', label:'Python', g:'lang', r:20},
+      {id:'sql', label:'SQL', g:'lang', r:19},
+      {id:'java', label:'Java', g:'lang', r:15},
+      {id:'dotnet', label:'C#/.NET', g:'lang', r:16},
+      {id:'oracle', label:'Oracle', g:'data', r:16},
+      {id:'sqlserver', label:'SQL Server', g:'data', r:16},
+      {id:'powerbi', label:'Power BI', g:'data', r:15},
+      {id:'tableau', label:'Tableau', g:'data', r:14},
+      {id:'etl', label:'ETL/DW', g:'data', r:17},
+      {id:'gitlab', label:'GitLab', g:'devops', r:14},
+      {id:'jenkins', label:'Jenkins', g:'devops', r:14},
+      {id:'scrum', label:'Scrum', g:'devops', r:14},
+      {id:'cicd', label:'CI/CD', g:'devops', r:14},
+    ];
+    const links = [
+      ['core','azure'],['core','databricks'],['core','python'],['core','sql'],['core','etl'],['core','aws'],
+      ['azure','databricks'],['databricks','spark'],['databricks','pyspark'],['spark','pyspark'],
+      ['databricks','delta'],['azure','delta'],['aws','spark'],
+      ['python','pyspark'],['python','spark'],['sql','oracle'],['sql','sqlserver'],['sql','etl'],
+      ['java','dotnet'],['core','dotnet'],['oracle','etl'],['sqlserver','etl'],
+      ['etl','powerbi'],['etl','tableau'],['powerbi','sqlserver'],
+      ['core','scrum'],['scrum','cicd'],['cicd','gitlab'],['cicd','jenkins'],['python','java'],
+    ];
+    let w,h,drag=null,hover=null,mx=0,my=0;
+    function size(){ w=c.width=c.offsetWidth*devicePixelRatio; h=c.height=c.offsetHeight*devicePixelRatio; x.setTransform(devicePixelRatio,0,0,devicePixelRatio,0,0); place(); }
+    function place(){
+      const cw=c.offsetWidth, ch=c.offsetHeight;
+      nodes.forEach((n,i)=>{
+        if(n.x===undefined){
+          if(n.fixed){ n.x=cw/2; n.y=ch/2; }
+          else { const a=i/nodes.length*Math.PI*2; n.x=cw/2+Math.cos(a)*(cw/4); n.y=ch/2+Math.sin(a)*(ch/3); }
+          n.vx=0; n.vy=0;
+        }
+      });
+    }
+    function sim(){
+      const cw=c.offsetWidth, ch=c.offsetHeight;
+      // repulsion
+      for(let i=0;i<nodes.length;i++)for(let j=i+1;j<nodes.length;j++){
+        const a=nodes[i],b=nodes[j]; let dx=a.x-b.x,dy=a.y-b.y,d=Math.hypot(dx,dy)||1;
+        const f=2400/(d*d); const fx=dx/d*f, fy=dy/d*f;
+        if(!a.fixed){a.vx+=fx;a.vy+=fy} if(!b.fixed){b.vx-=fx;b.vy-=fy}
+      }
+      // springs
+      links.forEach(([s,t])=>{
+        const a=nodes.find(n=>n.id===s),b=nodes.find(n=>n.id===t);
+        let dx=b.x-a.x,dy=b.y-a.y,d=Math.hypot(dx,dy)||1; const f=(d-95)*.012;
+        const fx=dx/d*f, fy=dy/d*f;
+        if(!a.fixed){a.vx+=fx;a.vy+=fy} if(!b.fixed){b.vx-=fx;b.vy-=fy}
+      });
+      nodes.forEach(n=>{
+        if(n===drag){ n.x=mx; n.y=my; n.vx=n.vy=0; return; }
+        if(n.fixed){ n.x=cw/2; n.y=ch/2; return; }
+        // center pull
+        n.vx+=(cw/2-n.x)*.0015; n.vy+=(ch/2-n.y)*.0015;
+        n.vx*=.85; n.vy*=.85; n.x+=n.vx; n.y+=n.vy;
+        n.x=Math.max(n.r,Math.min(cw-n.r,n.x)); n.y=Math.max(n.r,Math.min(ch-n.r,n.y));
+      });
+    }
+    function connected(id){ const s=new Set([id]); links.forEach(([a,b])=>{ if(a===id)s.add(b); if(b===id)s.add(a); }); return s; }
+    function draw(){
+      sim();
+      x.clearRect(0,0,w,h);
+      const hi = hover?connected(hover):null;
+      // links
+      links.forEach(([s,t])=>{
+        const a=nodes.find(n=>n.id===s),b=nodes.find(n=>n.id===t);
+        const active = hi && (hi.has(s)&&hi.has(t)&&(s===hover||t===hover));
+        x.strokeStyle = active?'rgba(34,211,238,.7)':(hover?'rgba(79,124,255,.08)':'rgba(79,124,255,.22)');
+        x.lineWidth = active?2:1;
+        x.beginPath(); x.moveTo(a.x,a.y); x.lineTo(b.x,b.y); x.stroke();
+      });
+      // nodes
+      nodes.forEach(n=>{
+        const dim = hi && !hi.has(n.id);
+        const col = COL[n.g];
+        x.globalAlpha = dim?.25:1;
+        // glow
+        if(n.id===hover||n.fixed){ x.shadowColor=col; x.shadowBlur=18; } else { x.shadowBlur=0; }
+        const grad=x.createRadialGradient(n.x,n.y,0,n.x,n.y,n.r);
+        grad.addColorStop(0,col); grad.addColorStop(1, n.fixed?'#1a2142':shade(col));
+        x.fillStyle=grad; x.beginPath(); x.arc(n.x,n.y,n.r,0,7); x.fill();
+        x.shadowBlur=0;
+        x.strokeStyle=col; x.lineWidth=1.5; x.stroke();
+        // label
+        x.globalAlpha = dim?.3:1;
+        x.fillStyle = n.fixed?'#fff':'#e8ecfb';
+        x.font = (n.fixed?'700 ':'500 ')+(n.fixed?12:10)+"px 'JetBrains Mono',monospace";
+        x.textAlign='center'; x.textBaseline='middle';
+        x.fillText(n.label, n.x, n.y+(n.fixed?0:n.r+12));
+        if(n.fixed){ x.fillStyle='#0a0e1f'; x.fillText('◆', n.x, n.y); }
+      });
+      x.globalAlpha=1;
+      requestAnimationFrame(draw);
+    }
+    function shade(hex){ return hex+'22'; }
+    function pos(e){ const r=c.getBoundingClientRect(); const t=e.touches?e.touches[0]:e; return {x:t.clientX-r.left, y:t.clientY-r.top}; }
+    function hit(p){ return nodes.find(n=>Math.hypot(n.x-p.x,n.y-p.y)<n.r+4); }
+    c.addEventListener('mousemove',e=>{ const p=pos(e); mx=p.x;my=p.y; if(!drag){ const n=hit(p); hover=n?n.id:null; c.style.cursor=n?'grab':'default'; } });
+    c.addEventListener('mousedown',e=>{ const p=pos(e); const n=hit(p); if(n){drag=n;hover=n.id;c.style.cursor='grabbing'} });
+    addEventListener('mouseup',()=>{drag=null});
+    c.addEventListener('touchstart',e=>{ const p=pos(e); const n=hit(p); if(n){drag=n;hover=n.id; mx=p.x;my=p.y; e.preventDefault()} },{passive:false});
+    c.addEventListener('touchmove',e=>{ const p=pos(e); mx=p.x;my=p.y; e.preventDefault() },{passive:false});
+    addEventListener('touchend',()=>{drag=null});
+    addEventListener('resize',size); size(); draw();
+  })();
+</script>
+</body>
+</html>
